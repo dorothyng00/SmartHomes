@@ -1,28 +1,30 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <TopBar />
+    <div id="nav" style="display:flex">
+      <LeftCol />
+      <router-view />
+      <!-- <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link> -->
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import LeftCol from '@/components/LeftCol.vue'
+import TopBar from '@/components/TopBar.vue'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  components :{
+    LeftCol,TopBar
   }
 }
 </script>
-
 <style>
+@import 'tailwind.min.css';
+@import 'stylesheet.css';
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  font-family: Roboto;
 }
+
 </style>
