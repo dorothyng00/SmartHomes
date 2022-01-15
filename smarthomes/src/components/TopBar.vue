@@ -1,5 +1,5 @@
 <template>
-    <div style="width:100%; height:80px">
+    <div style="width:100%; height:80px; background-color:var(--offWhiteLight)">
         <!-- <div>adf</div> -->
     </div>
 </template>

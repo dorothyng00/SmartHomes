@@ -9,8 +9,16 @@
   },
   "dependencies": {
     "ant-design-vue": "^1.7.8",
+    "apexcharts": "^3.30.0",
+    "axios": "^0.21.1",
+    "chart.js": "^3.6.0",
     "core-js": "^3.6.5",
+    "flask": "^0.2.10",
     "vue": "^2.6.11",
+    "vue-apexcharts": "^1.6.2",
+    "vue-chartjs": "^3.5.1",
+    "vue-firebase": "^1.0.8",
+    "vue-resource": "^1.5.3",
     "vue-router": "^3.2.0"
   },
   "devDependencies": {

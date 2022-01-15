@@ -1,12 +1,17 @@
 <template>
     <div class="flex w-full relative">
-        <div class="flex-1" style="padding:0 20px">
+        <div class="flex-1" style="padding:0 20px 20px 20px; background-color:var(--offWhiteLight)">
             <a-row :gutter="[16, 16]">
                 <a-col v-for="room in rooms" :key="room.id" :span="6">
-                    <div style="width:auto; border-radius:20px; border:1px solid #f1f2fd; padding:10px">
+                    <div style="width:auto; border-radius:20px; border:1px solid #f1f2fd; padding:10px; background-color:#FFF">
                         <div class="flex justify-between items-center">
                             <div style="font-weight:500; font-size:15px">{{room.name}}</div>
-                            <i style="cursor:pointer" class="fas fa-ellipsis-h" />
+                            <a-dropdown>
+                                <i style="cursor:pointer" class="fas fa-ellipsis-h" />
+                                <a-menu slot="overlay">
+                                    <a-menu-item>Edit Room</a-menu-item>
+                                </a-menu>
+                            </a-dropdown>
                         </div>
                         <div class="flex items-center mt-2">
                             <div class="mr-3">
@@ -22,7 +27,7 @@
             </a-row>
             <a-row class="mt-6" :gutter="16">
                 <a-col :span="12">
-                    <div class="justify-between" style="border-radius:20px; border:1px solid #f1f2fd; padding:10px; display:flex">
+                    <div class="justify-between" style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px; display:flex">
                         <div class="flex">
                             <div style="padding:20px; border-radius:20px; border: 1px solid #f1f2fd;">
                                 <i style="font-size:35px" class="fas fa-thermometer-quarter" />
@@ -45,7 +50,7 @@
                     </div>
                 </a-col>
                 <a-col :span="12">
-                    <div class="flex" style="border-radius:20px; border:1px solid #f1f2fd; padding:10px">
+                    <div class="flex" style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px">
                         <div style="padding:20px; border-radius:20px; border: 1px solid #f1f2fd;">
                             <i style="font-size:35px" class="fas fa-lightbulb" />
                         </div>
@@ -63,8 +68,15 @@
                     </div>
                 </a-col>
             </a-row>
+            <a-row class="mt-6" :gutter="16">
+                <a-col :span="24">
+                    <div style="background-color:#FFF; border-radius:20px; border: 1px solid #f1f2fd; padding:10px">
+                        <div id="chart"></div>
+                    </div>
+                </a-col>
+            </a-row>
         </div>
-        <div>
+        <div style="background-color:var(--offWhiteLight)">
             <UserPanel />
         </div>
     </div>
@@ -72,12 +84,14 @@
 
 <script>
 import UserPanel from '@/components/UserPanel.vue'
+import ApexCharts from 'apexcharts'
 export default {
     components:{
         UserPanel
     },
     data() {
         return{
+            options:{},
             rooms:[
                 {
                     name:'Living Room',
@@ -119,6 +133,60 @@ export default {
         decreaseTemp() {
             this.home.temperature --
         }
+    },
+    mounted() {
+        var options = {
+            series: [{
+                name: 'Gas',
+                data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+                }, {
+                name: 'Hydro',
+                data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+                }, {
+                name: 'Power Consumption',
+                data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+            },
+            yaxis: {
+                title: {
+                    text: '$'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                    return "$ " + val
+                    }
+                }
+            }
+        };
+        var chart = new ApexCharts(document.querySelector('#chart'), options);
+
+        chart.render()
     }
 }
 </script>

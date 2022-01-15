@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="flex-col flex left-col-width" :style="resize ? 'width:65px':'width:200px'" style="justify-content:space-between; height:calc(100vh - 80px); background-color:var(--green); border-radius:0 50px 0 0; overflow:hidden">
+    <div style="background-color:var(--offWhiteLight)">
+        <div class="flex-col flex left-col-width" :style="resize ? 'width:65px':'width:200px'" style="justify-content:space-between; min-height:calc(100vh - 80px); height:100%; background-color:var(--green); border-radius:0 50px 0 0; overflow:hidden">
             <div>    
                 <div style="padding:15px 20px; border-bottom:1px solid #FFF; display:flex; align-items: center; color:#FFF">
                     <i @click="resize = !resize" style="font-size:20px; cursor:pointer" class="fas fa-bars mr-3" />
@@ -14,7 +14,7 @@
                     <i style="font-size:20px" class="fas fa-home" :class="resize ? '' :' mr-3'" :style="selectedNav == '/rooms' ? 'color:var(--orange)':''"></i>
                     <div v-show="!resize" :style="selectedNav == '/rooms' ? 'color:#000':''">Rooms</div>
                 </div>
-                <div class="nav-el">
+                <div @click="$router.push('/devices')" class="nav-el">
                     <i style="font-size:20px" class="fas fa-tablet-alt" :class="resize ? '' :' mr-3'" />
                     <div v-if="!resize" :style="resize ? 'opacity: 0;' : 'opacity: 1;'">Devices</div>
                 </div>

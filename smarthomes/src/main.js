@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import VueResource from 'vue-resource'
 import {
   Avatar,
   TreeSelect,
@@ -115,6 +116,7 @@ Vue.use(FormModel)
 Vue.use(Slider)
 Vue.use(Collapse)
 Vue.use(Calendar)
+Vue.use(VueResource)
 
 new Vue({
   router,
