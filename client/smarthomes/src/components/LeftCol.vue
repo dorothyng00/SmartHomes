@@ -6,15 +6,18 @@
                     <i @click="resize = !resize" style="font-size:20px; cursor:pointer" class="fas fa-bars mr-3" />
                     <div v-if="!resize">SmartHomes</div>
                 </div>
-                <div @click="$router.push('/')" class="nav-el" :class="selectedNav == '/' ? 'selected-nav':''">
+                 <!-- @click="$router.push('/')" -->
+                <div class="nav-el" :class="selectedNav == '/' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-tachometer-alt" :class="resize ? '' :' mr-3'" :style="selectedNav == '/' ? 'color:var(--orange)':''"></i>
                     <div v-if="!resize" :style="selectedNav == '/' ? 'color:#000':''">Dashboard</div>
                 </div>
-                <div @click="$router.push('/rooms')" class="nav-el" :class="selectedNav == '/rooms' ? 'selected-nav':''">
+                <!-- @click="$router.push('/rooms')" -->
+                <div class="nav-el" :class="selectedNav == '/rooms' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-home" :class="resize ? '' :' mr-3'" :style="selectedNav == '/rooms' ? 'color:var(--orange)':''"></i>
                     <div v-show="!resize" :style="selectedNav == '/rooms' ? 'color:#000':''">Rooms</div>
                 </div>
-                <div @click="$router.push('/devices')" class="nav-el">
+                <!-- @click="$router.push('/devices')"  -->
+                <div class="nav-el">
                     <i style="font-size:20px" class="fas fa-tablet-alt" :class="resize ? '' :' mr-3'" />
                     <div v-if="!resize" :style="resize ? 'opacity: 0;' : 'opacity: 1;'">Devices</div>
                 </div>
