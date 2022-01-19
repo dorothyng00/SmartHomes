@@ -1,9 +1,9 @@
 <template>
-  <div id="app">
+  <div id="app" class="flex flex-col">
     <TopBar />
-    <div id="nav" style="display:flex">
+    <div id="nav" class="w-full" style="display:flex;">
       <LeftCol />
-      <!-- <router-view /> -->
+      <router-view class="flex-1" style="overflow: hidden;" />
       <!-- <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> -->
     </div>

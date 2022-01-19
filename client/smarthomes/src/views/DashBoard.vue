@@ -1,8 +1,11 @@
 <template>
-    <div class="flex w-full relative">
+    <div class="lg:flex flex-1 relative">
+        <div class="order-2 user-panel" style="background-color:var(--offWhiteLight)">
+            <UserPanel />
+        </div>
         <div class="flex-1" style="padding:0 20px 20px 20px; background-color:var(--offWhiteLight)">
             <a-row :gutter="[16, 16]">
-                <a-col v-for="room in rooms" :key="room.id" :span="6">
+                <a-col v-for="room in rooms" :key="room.id" :xl="{span:6}" :lg="{span:8}" :md="{span:12}">
                     <div style="width:auto; border-radius:20px; border:1px solid #f1f2fd; padding:10px; background-color:#FFF">
                         <div class="flex justify-between items-center">
                             <div style="font-weight:500; font-size:15px">{{room.name}}</div>
@@ -25,8 +28,8 @@
                     </div>
                 </a-col>
             </a-row>
-            <a-row class="mt-6" :gutter="16">
-                <a-col :span="12">
+            <a-row class="mt-6" :gutter="[16, 16]">
+                <a-col :lg="{span:12}">
                     <div class="justify-between" style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px; display:flex">
                         <div class="flex">
                             <div style="padding:20px; border-radius:20px; border: 1px solid #f1f2fd;">
@@ -49,7 +52,7 @@
                         </div>
                     </div>
                 </a-col>
-                <a-col :span="12">
+                <a-col :lg="{span:12}">
                     <div class="flex" style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px">
                         <div style="padding:20px; border-radius:20px; border: 1px solid #f1f2fd;">
                             <i style="font-size:35px" class="fas fa-lightbulb" />
@@ -75,9 +78,6 @@
                     </div>
                 </a-col>
             </a-row>
-        </div>
-        <div style="background-color:var(--offWhiteLight)">
-            <UserPanel />
         </div>
     </div>
 </template>
@@ -194,5 +194,12 @@ export default {
 <style>
 .high-percent .ant-progress-inner .ant-progress-circle{
     stroke: var(--danger) !important;
+}
+</style>
+<style scoped>
+@media (max-width:1024px) {
+    .user-panel{
+        padding:0 20px 20px 20px;
+    }
 }
 </style>

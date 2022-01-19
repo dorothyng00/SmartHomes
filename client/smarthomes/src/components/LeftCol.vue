@@ -3,35 +3,32 @@
         <div class="flex-col flex left-col-width" :style="resize ? 'width:65px':'width:200px'" style="justify-content:space-between; min-height:calc(100vh - 80px); height:100%; background-color:var(--green); border-radius:0 50px 0 0; overflow:hidden">
             <div>    
                 <div style="padding:15px 20px; border-bottom:1px solid #FFF; display:flex; align-items: center; color:#FFF">
-                    <i @click="resize = !resize" style="font-size:20px; cursor:pointer" class="fas fa-bars mr-3" />
+                    <i @click="openNav" style="font-size:20px; cursor:pointer" class="fas fa-bars mr-3" />
                     <div v-if="!resize">SmartHomes</div>
                 </div>
-                 <!-- @click="$router.push('/')" -->
-                <div class="nav-el" :class="selectedNav == '/' ? 'selected-nav':''">
+                <div @click="redirect('/')" class="nav-el" :class="selectedNav == '/' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-tachometer-alt" :class="resize ? '' :' mr-3'" :style="selectedNav == '/' ? 'color:var(--orange)':''"></i>
                     <div v-if="!resize" :style="selectedNav == '/' ? 'color:#000':''">Dashboard</div>
                 </div>
-                <!-- @click="$router.push('/rooms')" -->
-                <div class="nav-el" :class="selectedNav == '/rooms' ? 'selected-nav':''">
+                <div @click="redirect('/rooms')" class="nav-el" :class="selectedNav == '/rooms' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-home" :class="resize ? '' :' mr-3'" :style="selectedNav == '/rooms' ? 'color:var(--orange)':''"></i>
-                    <div v-show="!resize" :style="selectedNav == '/rooms' ? 'color:#000':''">Rooms</div>
+                    <div v-if="!resize" :style="selectedNav == '/rooms' ? 'color:#000':''">Rooms</div>
                 </div>
-                <!-- @click="$router.push('/devices')"  -->
-                <div class="nav-el">
-                    <i style="font-size:20px" class="fas fa-tablet-alt" :class="resize ? '' :' mr-3'" />
-                    <div v-if="!resize" :style="resize ? 'opacity: 0;' : 'opacity: 1;'">Devices</div>
+                <div @click="redirect('/devices')" class="nav-el" :class="selectedNav == '/devices' ? 'selected-nav':''">
+                    <i style="font-size:20px" class="fas fa-tablet-alt" :class="resize ? '' :' mr-3'" :style="selectedNav == '/devices' ? 'color:var(--orange)':''" />
+                    <div v-if="!resize" :style="selectedNav == '/devices' ? 'color:#000':''">Devices</div>
                 </div>
-                <div class="nav-el">
-                    <i style="font-size:20px" class="fas fa-lock" :class="resize ? '' :' mr-3'" />
-                    <div v-if="!resize">Security</div>
+                <div @click="redirect('/security')" class="nav-el" :class="selectedNav == '/security' ? 'selected-nav':''">
+                    <i style="font-size:20px" class="fas fa-lock" :class="resize ? '' :' mr-3'" :style="selectedNav == '/security' ? 'color:var(--orange)':''" />
+                    <div v-if="!resize" :style="selectedNav == '/security' ? 'color:#000':''">Security</div>
                 </div>
-                <div class="nav-el">
-                    <i style="font-size:20px" class="fas fa-signal" :class="resize ? '' :' mr-3'" />
-                    <div v-if="!resize">Statisics</div>
+                <div @click="redirect('/statistics')" class="nav-el" :class="selectedNav == '/statistics' ? 'selected-nav':''">
+                    <i style="font-size:20px" class="fas fa-signal" :class="resize ? '' :' mr-3'" :style="selectedNav == '/statistics' ? 'color:var(--orange)':''" />
+                    <div v-if="!resize" :style="selectedNav == '/statistics' ? 'color:#000':''">Statisics</div>
                 </div>
-                <div class="nav-el">
-                    <i style="font-size:20px" class="fas fa-users" :class="resize ? '' :' mr-3'" />
-                    <div v-if="!resize">Members</div>
+                <div @click="redirect('/members')" class="nav-el" :class="selectedNav == '/members' ? 'selected-nav':''">
+                    <i style="font-size:20px" class="fas fa-users" :class="resize ? '' :' mr-3'" :style="selectedNav == '/members' ? 'color:var(--orange)':''" />
+                    <div v-if="!resize" :style="selectedNav == '/members' ? 'color:#000':''">Members</div>
                 </div>
             </div>
             <div>
@@ -61,10 +58,16 @@ export default {
         }
     },
     methods:{
-
+        redirect(route) {
+            if (this.$route.path != route) this.$router.push(route)
+        },
+        openNav() {
+            if (window.innerWidth >= 640) this.resize = !this.resize
+        }
     },
     created() {
-        
+        let w = window.innerWidth
+        if (w < 640) this.resize = true
     },
     mounted() {
         let iconScript = document.createElement('script')

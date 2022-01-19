@@ -18,12 +18,12 @@
                                 </a-tooltip>
                             </div>
                         </div>
-                        <div class="flex mt-3">
+                        <div class="sm:flex mt-3">
                             <div class="mr-5">
                                 <div style="font-weight:500">Power Consumption</div>
                                 <div>{{room.powerConsumption}}kWh</div>
                             </div>
-                            <div class="ml-5">
+                            <div class="sm:ml-5 mt-2 sm:mt-0">
                                 <div style="font-weight:500">Devices</div>
                                 <div v-for="device in devices" :key="device.id">
                                     <div v-if="device.room == room.id">{{device.name}}</div>

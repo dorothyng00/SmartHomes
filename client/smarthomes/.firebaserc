@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "capstone-database2"
+    "default": "capstone-database2",
+    "hosting": "smarthomes-61235"
   }
 }

@@ -1,7 +1,7 @@
 <template>  
     <div>
         <AddUserModal :visible="addUser" @closeModal="closeModal" />
-        <div style="width:400px; background-color: var(--offWhite); border-radius:20px; padding:20px">
+        <div class="user-panel" style="background-color: var(--offWhite); border-radius:20px; padding:20px">
             <div style="font-size:22px; font-weight:500">Welcome back {{this.user.firstName}}!</div>
             <div class="mt-5" style="background-color:var(--lightOrange); border-radius:20px; padding:10px">
                 <div style="font-size:20px">{{`${shortMonth[new Date().getMonth()]}/${new Date().getDate()}/${new Date().getFullYear()}`}}</div>
@@ -91,6 +91,15 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+@media (min-width:1024px) {
+    .user-panel{
+        width:400px;
+    }
+}
+@media (max-width:1024px) {
+    .user-panel{
+        width:100%;
+    }
+}
 </style>
