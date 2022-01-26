@@ -71,6 +71,9 @@
 </template>
 
 <script>
+import api from '@/services/api'
+// import testing from '@/services/testing'
+
 export default {
     props:{
         visible:{
@@ -95,8 +98,14 @@ export default {
         addUser() {
             this.$refs.newUser.validate(valid => {
                 if (valid) {
-                    console.log('valid')
-                    this.$refs.newUser.resetFields()
+                    console.log('validaaaa')
+                    // this.$refs.newUser.resetFields()
+                    api().get('app').then(({data}) => {
+                        console.log('dataaaaaa =>>>', data)
+                    })
+                    // testing.postTest().then(({data}) => {
+                    //     console.log('testtt', data)
+                    // })
                     this.cancel()
                 }
             })
