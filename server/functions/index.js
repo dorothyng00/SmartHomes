@@ -20,10 +20,11 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
 const users = db.collection("users");
-const rooms = db.collection("rooms");
-const devices = db.collection("devices");
-const hubs = db.collection('hubs');
+// const rooms = db.collection("rooms");
+// const devices = db.collection("devices");
+// const hubs = db.collection('hubs');
 //////////////////////////////////////
 
 // Initialize Express App
@@ -37,8 +38,10 @@ app.get("/app", (req, res) => {
 
 app.post('/test', async (req,res) => {
     const data = req.body;
-    await users.add({ data });
+    await users.add(data);
     res.send({ msg: "User Added" });
 });
+
+
 
 exports.app = functions.https.onRequest(app);
