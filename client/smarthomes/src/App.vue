@@ -2,10 +2,8 @@
   <div id="app" class="flex flex-col">
     <TopBar />
     <div id="nav" class="w-full" style="display:flex;">
-      <LeftCol />
+      <LeftCol v-if="$route.meta && $route.meta.leftNav"  />
       <router-view class="flex-1" style="overflow: hidden;" />
-      <!-- <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> -->
     </div>
   </div>
 </template>
@@ -15,8 +13,14 @@ import LeftCol from '@/components/LeftCol.vue'
 import TopBar from '@/components/TopBar.vue'
 
 export default {
+  data() {
+    return{
+    }
+  },
   components :{
     LeftCol,TopBar
+  },
+  mounted() {
   }
 }
 </script>

@@ -7,55 +7,68 @@ const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: () => import(/* webpackChunkName: "about" */ '../views/DashBoard.vue')
+    meta:{
+      leftNav:true
+    },
+    component: () => import('../views/DashBoard.vue')
   },
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    meta:{
+      leftNav:true
+    },
+    component: () => import('../views/About.vue')
   },
   {
     path: '/rooms',
     name: 'Rooms',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Rooms.vue')
+    component: () => import('../views/Rooms.vue')
   },
   {
     path: '/devices',
     name: 'Devices',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Devices.vue')
+    component: () => import('../views/Devices.vue')
   },
   {
     path: '/security',
     name: 'Security',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Security.vue')
+    meta:{
+      leftNav:true
+    },
+    component: () => import('../views/Security.vue')
   },
   {
     path: '/statistics',
     name: 'Statistics',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Statistics.vue')
+    meta:{
+      leftNav:true
+    },
+    component: () => import('../views/Statistics.vue')
   },
   {
     path: '/members',
     name: 'Members',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Members.vue')
+    meta:{
+      leftNav:true
+    },
+    component: () => import('../views/Members.vue')
+  },
+  {
+    path: '/login',
+    name: 'Log In',
+    meta:{
+      leftNav:false
+    },
+    component: () => import('../views/LogIn.vue')
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    meta:{
+      leftNav:false
+    },
+    component: () => import('../views/Register.vue')
   }
 ]
 

@@ -7,6 +7,12 @@
     --danger:#dc3545;
     --lightOrange:#fed38f;
     --offWhiteLight:#fafafa;
+    --lightWord:#858586;
+    --success:#4bb543;
+}
+
+.smallWord{
+    font-size:10px;
 }
 
 body {
