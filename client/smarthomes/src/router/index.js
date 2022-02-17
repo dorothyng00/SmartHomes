@@ -23,11 +23,17 @@ const routes = [
   {
     path: '/rooms',
     name: 'Rooms',
+    meta:{
+      leftNav:true
+    },
     component: () => import('../views/Rooms.vue')
   },
   {
     path: '/devices',
     name: 'Devices',
+    meta:{
+      leftNav:true
+    },
     component: () => import('../views/Devices.vue')
   },
   {
