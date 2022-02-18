@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import store from './store/store.js'
 import VueResource from 'vue-resource'
 import {
   Avatar,
@@ -118,6 +118,8 @@ Vue.use(Slider)
 Vue.use(Collapse)
 Vue.use(Calendar)
 Vue.use(VueResource)
+
+Vue.config.productionTip = false
 
 new Vue({
   router,
