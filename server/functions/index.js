@@ -1488,17 +1488,25 @@ app.post('/register', async(req,res) => {
 // Login and send back the hubs that the user is in information
 app.post('/login', async (req, res) => {
   const data = req.body;
+
   try{
     const login = await firebase.auth().signInWithEmailAndPassword(data.email, data.password); 
+    // const userId = login.user.id.toString()
+    const snapshot = await hubs.where("uids", "array-contains", login.user.uid).get()
+    const qHubs = snapshot.docs.map(doc => {
+      let hub = {}
+      hub = doc.data()
+      hub.id = doc.id
+      return hub
+    })
+    res.send({"success":true, "user":login.user.uid, "hubs":qHubs, "login":login});
 
-    const q = hubs.where("uids", "array-contains", login.user.uid);
-
-    res.send({"success":true, "user":login.user.uid, "hubs":q});
   }catch(error) {
     res.send({"error":error});
   }
 })
 
+// Logout and send back the user information
 app.post('/logout', async(req,res) => {
   const data = req.body;
   const logout = await firebase.auth().signOut()
@@ -1508,10 +1516,22 @@ app.post('/logout', async(req,res) => {
 
 app.get('/users/:id', async (req, res) => {
   const items = []
-  const find = await users.where("uid", "==", req.params.id).get();
-  const getUsers = await users.get()
+  // const find = await users.where("uid", "==", req.params.id).get().then(snapshot => {
+  //   snapshot.docs.forEach(doc => {
+  //     items.push(doc.data())
+  //   })
+  // });
 
-  res.send({"data":items, "find":find, "users":getUsers});
+
+  const snapshot = await users.where("uid", "==", req.params.id).get()
+  const getUsers = snapshot.docs.map(doc => {
+    let user = {}
+    user = doc.data()
+    user.id = doc.id
+    return user
+  });
+
+  res.send({"data":items, "users":getUsers});
 })
 
 app.get('/users/:id/getHub',  (req,res) => {

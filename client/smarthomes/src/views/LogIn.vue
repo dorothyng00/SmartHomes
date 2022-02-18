@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import api from '@/services/api'
 export default {
     data() {
         return{
@@ -50,7 +51,9 @@ export default {
         login() {
             this.$refs.loginInfo.validate(valid => {
                 if(valid) {
-                    console.log('login')
+                    api().post('/login', {email:this.loginInfo.email, password:this.loginInfo.password}).then(({data}) => {
+                        console.log('dataata =>>', data)
+                    })
                 }
             })
         }
