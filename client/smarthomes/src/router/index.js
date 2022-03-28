@@ -3,6 +3,18 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+// let getApp = false
+
+function getCookie(name) {
+  let cookies = document.cookie.split('; ')
+  let index = cookies.findIndex(x => x.includes(name))
+  if (index != -1 && cookies[index].length > name.length + 1){
+    return true
+  } else {
+    return false
+  }
+}
+
 const routes = [
   {
     path: '/',
@@ -10,7 +22,11 @@ const routes = [
     meta:{
       leftNav:true
     },
-    component: () => import('../views/DashBoard.vue')
+    component: () => import('../views/DashBoard.vue'),
+    beforeEnter: (to, from, next) => {
+      if (!getCookie('__shtk')) next('/login')
+      else next()
+    }
   },
   {
     path: '/about',
@@ -66,7 +82,11 @@ const routes = [
     meta:{
       leftNav:false
     },
-    component: () => import('../views/LogIn.vue')
+    component: () => import('../views/LogIn.vue'),
+    beforeEnter:(to, from, next) => {
+      if (getCookie('__shtk')) next('/')
+      else next()
+    }
   },
   {
     path: '/register',
@@ -83,5 +103,17 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+// router.beforeEach(async (to, from, next) => {
+//   let error 
+//   if (!getApp) {
+//     let resp = await this.$store.actions('GET_DATA')
+//     error = resp.error
+//     getApp = true
+//   }
+
+//   if (error) return console.log('ERROR =>>',error)
+//   next()
+// })
 
 export default router

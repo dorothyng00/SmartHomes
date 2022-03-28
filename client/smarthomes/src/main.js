@@ -92,7 +92,7 @@ Vue.use(Alert)
 Vue.use(Checkbox)
 Vue.use(Tabs)
 Vue.use(Pagination)
-Vue.use(notification)
+// Vue.use(notification)
 Vue.use(Drawer)
 Vue.use(Cascader)
 Vue.use(DatePicker)
@@ -120,6 +120,8 @@ Vue.use(Calendar)
 Vue.use(VueResource)
 
 Vue.config.productionTip = false
+
+Vue.prototype.$notification = notification
 
 new Vue({
   router,

@@ -3,12 +3,20 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default {
+export default new Vuex.Store  ({
   state:{
-    hubs:[]
+    hubs:[],
+    devices:[],
+    members:[],
+    rooms:[],
   },
   mutations:{
-
+    GET_APPDATA(state, {hubs = [], devices = [], rooms = [], members = []}) {
+      state.hubs = hubs
+      state.devices = devices
+      state.rooms = rooms
+      state.members = members
+    },
   },
   actions:{
     
@@ -16,4 +24,4 @@ export default {
   getters:{
 
   }
-}
+})

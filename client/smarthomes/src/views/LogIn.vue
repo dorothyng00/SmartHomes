@@ -1,5 +1,6 @@
 <template>
     <div style="background-color:var(--green); width: 100%; height:calc(100vh - 80px); overflow:hidden">
+        <Loading :show="loading" />
         <div class="container mx-auto login-page">
             <div class="flex justify-center" style="margin:0 5%;">
                 <div>
@@ -35,9 +36,14 @@
 
 <script>
 import api from '@/services/api'
+import Loading from '@/components/Loading.vue'
 export default {
+    components:{
+        Loading
+    },
     data() {
         return{
+            loading:false,
             loginInfo:{
                 email:'',
                 password:''
@@ -51,8 +57,16 @@ export default {
         login() {
             this.$refs.loginInfo.validate(valid => {
                 if(valid) {
-                    api().post('/login', {email:this.loginInfo.email, password:this.loginInfo.password}).then(({data}) => {
+                    this.loading = true
+                    api().post('/login', {email:this.loginInfo.email, password:this.loginInfo.password}).then(async ({data}) => {
                         console.log('dataata =>>', data)
+                        if (data.success) {
+                            this.$store.commit('GET_APPDATA', data)
+                            console.log('THE DATA', this.$store.state)
+                            if (data.login.user.stsTokenManager.accessToken) document.cookie = await `__shtk = ${data.login.user.stsTokenManager.accessToken}`
+                            this.$router.push('/')
+                        }
+                        this.loading = false
                     })
                 }
             })

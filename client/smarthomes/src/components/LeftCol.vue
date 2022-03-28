@@ -1,5 +1,7 @@
 <template>
     <div style="background-color:var(--offWhiteLight)">
+        <Confirm :content="'Are you sure you want to log out?'" @onClose="onClose" @ok="ok" :cancelButton="'CANCEL'" :confirmButton="'LOGOUT'" :title="'Log out'" :visible="visible" />
+        <Loading :show="loading" />
         <div class="flex-col flex left-col-width" :style="resize ? 'width:65px':'width:200px'" style="justify-content:space-between; min-height:calc(100vh - 80px); height:100%; background-color:var(--green); border-radius:0 50px 0 0; overflow:hidden">
             <div>    
                 <div style="padding:15px 20px; border-bottom:1px solid #FFF; display:flex; align-items: center; color:#FFF">
@@ -32,7 +34,7 @@
                 </div>
             </div>
             <div>
-                <div class="nav-el logout">
+                <div @click="logout" class="nav-el logout">
                     <i style="font-size:20px" class="fas fa-power-off" :class="resize ? '' :' mr-3'" />
                     <div v-if="!resize">Logout</div>
                 </div>
@@ -42,11 +44,19 @@
 </template>
 
 <script>
+import Confirm from '@/components/Confirm.vue'
+import Loading from '@/components/Loading.vue'
+import api from '@/services/api'
 export default {
+    components:{
+        Confirm, Loading
+    },
     data(){
         return{
             resize:false,
-            selectedNav:'/'
+            selectedNav:'/',
+            visible:false,
+            loading:false,
         }
     },
     watch:{
@@ -58,6 +68,22 @@ export default {
         }
     },
     methods:{
+        onClose() {
+            this.visible = false
+        },
+        ok() {
+            this.loading = true
+            api().post('/logout').then(async ({data}) => {
+                console.log('data' , data)
+                this.loading = false
+                document.cookie = await '__shtk ='
+                this.$router.push('/login')
+                this.onClose()
+            })
+        },
+        logout() {
+            this.visible = true
+        },
         redirect(route) {
             if (this.$route.path != route) this.$router.push(route)
         },

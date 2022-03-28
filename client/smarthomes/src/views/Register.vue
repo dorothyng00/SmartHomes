@@ -1,5 +1,6 @@
 <template>
     <div style="background-color:var(--green); width: 100%; height:100%; padding-bottom:20px; overflow-y:scroll">
+        <Loading :show="loading" />
         <div class="container mx-auto login-page">
             <div class="flex justify-center" style="margin:0 5%;">
                 <div>
@@ -88,6 +89,7 @@
                         <div class="mt-3" style="width:100%">
                             <a-button @click="submit" style="width:100%" class="login-button">CREATE ACCOUNT</a-button>
                         </div>
+                        <div class="mt-2" style="color:var(--danger)" v-if="errorMessage != ''">{{errorMessage}}</div>
                     </div>
                 </div>
             </div>
@@ -96,7 +98,12 @@
 </template>
 
 <script>
+import api from '@/services/api'
+import Loading from '@/components/Loading.vue'
 export default {
+    components:{
+        Loading
+    },
     data() {
         return{
             register:{
@@ -105,7 +112,9 @@ export default {
                 confirmPassword:'',
                 firstName:'',
                 lastName:''
-            }
+            },
+            loading:false,
+            errorMessage:''
         }
     },
     methods:{
@@ -115,9 +124,15 @@ export default {
         submit() {
             this.$refs.register.validate(valid => {
                 if (valid) {
-            console.log('register', this.register)
-
-                }
+                    console.log('register', this.register)
+                    api().post('/register').then(({data}) => {
+                        console.log('dataa', data)
+                        if (data.success)this.$router.push('/login')
+                        else if (data.error) {
+                            this.errorMessage = data.error.message
+                        }
+                    })
+                }  
             })
         },
         emailRequirements(email){
