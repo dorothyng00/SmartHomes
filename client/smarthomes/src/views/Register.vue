@@ -125,7 +125,7 @@ export default {
             this.$refs.register.validate(valid => {
                 if (valid) {
                     console.log('register', this.register)
-                    api().post('/register').then(({data}) => {
+                    api().post('/register', this.register).then(({data}) => {
                         console.log('dataa', data)
                         if (data.success)this.$router.push('/login')
                         else if (data.error) {

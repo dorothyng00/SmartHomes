@@ -16,18 +16,18 @@
                     <i style="font-size:20px" class="fas fa-home" :class="resize ? '' :' mr-3'" :style="selectedNav == '/rooms' ? 'color:var(--orange)':''"></i>
                     <div v-if="!resize" :style="selectedNav == '/rooms' ? 'color:#000':''">Rooms</div>
                 </div>
-                <div @click="redirect('/devices')" class="nav-el" :class="selectedNav == '/devices' ? 'selected-nav':''">
+                <!-- <div @click="redirect('/devices')" class="nav-el" :class="selectedNav == '/devices' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-tablet-alt" :class="resize ? '' :' mr-3'" :style="selectedNav == '/devices' ? 'color:var(--orange)':''" />
                     <div v-if="!resize" :style="selectedNav == '/devices' ? 'color:#000':''">Devices</div>
-                </div>
+                </div> -->
                 <div @click="redirect('/security')" class="nav-el" :class="selectedNav == '/security' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-lock" :class="resize ? '' :' mr-3'" :style="selectedNav == '/security' ? 'color:var(--orange)':''" />
                     <div v-if="!resize" :style="selectedNav == '/security' ? 'color:#000':''">Security</div>
                 </div>
-                <div @click="redirect('/statistics')" class="nav-el" :class="selectedNav == '/statistics' ? 'selected-nav':''">
+                <!-- <div @click="redirect('/statistics')" class="nav-el" :class="selectedNav == '/statistics' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-signal" :class="resize ? '' :' mr-3'" :style="selectedNav == '/statistics' ? 'color:var(--orange)':''" />
                     <div v-if="!resize" :style="selectedNav == '/statistics' ? 'color:#000':''">Statisics</div>
-                </div>
+                </div> -->
                 <div @click="redirect('/members')" class="nav-el" :class="selectedNav == '/members' ? 'selected-nav':''">
                     <i style="font-size:20px" class="fas fa-users" :class="resize ? '' :' mr-3'" :style="selectedNav == '/members' ? 'color:var(--orange)':''" />
                     <div v-if="!resize" :style="selectedNav == '/members' ? 'color:#000':''">Members</div>
@@ -94,6 +94,7 @@ export default {
     created() {
         let w = window.innerWidth
         if (w < 640) this.resize = true
+        this.selectedNav = this.$route.path
     },
     mounted() {
         let iconScript = document.createElement('script')

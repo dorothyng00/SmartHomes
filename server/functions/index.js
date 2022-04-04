@@ -7,6 +7,7 @@ const cors = require('cors');
 
 // Initialize Firebase
 const firebase = require("firebase");
+const { firestore } = require('firebase-admin');
 require("firebase/firestore");
 require("firebase/auth");
 const firebaseConfig = {
@@ -93,10 +94,79 @@ app.post('/register', async(req,res) => {
 
     newUser.userPreference = preference
 
-    const dbUser = await users.add(newUser); // adding new user database 
+    let autoId = await users.doc().id;
+    newUser.id = autoId;
+    // console.log('doc.id', autoId)
 
-    res.send({"success":true, "user":{"uid":user.user.uid, "firstName":data.firstName, "lastName":data.lastName, "email":data.email, id:dbUser.id}}); // sending back suscess true and user information
+    // let ref = await users.doc();
+    // console.log('ref', ref)
+
+    await users.doc(autoId).set(newUser); // adding new user database 
+
+    res.send({"success":true, "user":newUser}); // sending back suscess true and user information
   }catch(error) {
+    res.send({"error":error});
+  }
+})
+
+app.post('/checkLogin', async(req,res) => {
+  const data = req.body
+  try{
+    const u = await firebase.auth().currentUser; 
+    console.log('current user', u)
+    if (u) {
+      const snapshot = await hubs.where("uids", "array-contains", u.uid).get() // finding all the hubs that the user is in
+      const qHubs = snapshot.docs.map(doc => {
+        let hub = {}
+        hub = doc.data()
+        hub.id = doc.id
+        return hub
+      })
+
+      const userSnapshot = await users.where("uid", "==", u.uid).get() // get all the users that has the correct uid should be 1 user only
+      const queryUser = userSnapshot.docs.map(doc => {
+        let newUser = {}
+        newUser = doc.data()
+        newUser.id = doc.id
+        return newUser
+      })
+
+      if(queryUser.length) {
+        let obj = queryUser[0];
+
+        const preference = obj.userPreference;
+        const infoObj = {
+          user:obj.id,
+          room:obj.room,
+          device:obj.device
+        };
+
+        let data = Object.assign(preference,infoObj);
+        const uPreference = await currentUser.doc("currentUser").update({data});
+      }
+
+      let rList = []
+      if (qHubs.length && qHubs[0].rooms && qHubs[0].rooms.length) {
+        const roomList = await rooms.where('id', 'in', qHubs[0].rooms).get() // get all rooms in hub
+        const qRooms = roomList.docs.map(doc => {
+          return doc.data()
+        })
+        rList = qRooms
+      }
+      let uList = []
+      if (qHubs.length && qHubs[0].users && qHubs[0].users.length) {
+        const userList = await users.where('id', 'in', qHubs[0].users).get() // get all users in hub
+        const qUsers = userList.docs.map(doc => {
+          return doc.data()
+        })
+        uList = qUsers
+      }
+      res.send({"success":true, "user":queryUser, "hubs":qHubs, "users":uList, "rooms":rList})
+    }
+    else {
+      res.send({"success":true, user:null})
+    }
+  } catch(error) {
     res.send({"error":error});
   }
 })
@@ -116,7 +186,7 @@ app.post('/login', async (req, res) => {
       return hub
     })
 
-    const userSnapshot = await users.where("uid", "==", login.user.uid).get() // get all the users that has the correct uid
+    const userSnapshot = await users.where("uid", "==", login.user.uid).get() // get all the users that has the correct uid should be 1 user only
     const queryUser = userSnapshot.docs.map(doc => {
       let newUser = {}
       newUser = doc.data()
@@ -137,7 +207,25 @@ app.post('/login', async (req, res) => {
       let data = Object.assign(preference,infoObj);
       const uPreference = await currentUser.doc("currentUser").update({data});
     }
-    res.send({"success":true, "user":queryUser, "hubs":qHubs, "login":login});
+
+    let rList = []
+    if (qHubs.length && qHubs[0].rooms && qHubs[0].rooms.length) {
+      const roomList = await rooms.where('id', 'in', qHubs[0].rooms).get() // get all rooms in hub
+      const qRooms = roomList.docs.map(doc => {
+        return doc.data()
+      })
+      rList = qRooms
+    }
+    let uList = []
+    if (qHubs.length && qHubs[0].users && qHubs[0].users.length) {
+      const userList = await users.where('id', 'in', qHubs[0].users).get() // get all users in hub
+      const qUsers = userList.docs.map(doc => {
+        return doc.data()
+      })
+      uList = qUsers
+    }
+
+    res.send({"success":true, "user":queryUser, "hubs":qHubs, "login":login, "users":uList, "rooms":rList});
 
   }catch(error) {
     res.send({"error":error});
@@ -163,7 +251,7 @@ app.post('/readComplete', async(req, res) => {
   }
 })
 
-app.get('/getHub/:id', async(res,req) => { // user id
+app.get('/getHub/:id', async(req,res) => { // user id
   try {
     const user = await users.doc(req.params.id).get().then((doc) => {
       return doc.data()
@@ -191,7 +279,8 @@ app.post('/joinHub/:id', async(req,res) => { // hub id
       uidList.push(data.user.uid)
 
       await hubs.doc(req.params.id).update({users:userList, uids:uidList})
-      res.send({success:true, data:hub, ids:userList, uids:uidList})
+      await users.doc(data.user.id).update({hub:req.params.id})
+      res.send({success:true, data:hub})
     }
   } catch(error) {
     res.send({"error":error})
@@ -206,12 +295,16 @@ app.post('/addHub/:id/:uid', async(req,res) => { // user id and user uid
       devices:[],
       rooms:[],
       users:[req.params.id],
-      uids:[req.params.uid]
+      uids:[req.params.uid],
+      id:""
     }
 
-    const addedHub = await hubs.add(newHub)
-    await users.doc(req.params.id).update({hub:addedHub.id, role:"admin"})
-    res.send({success:true, data:newHub, id:addedHub.id})
+    let autoId = await hubs.doc().id;
+    newHub.id = autoId
+
+    await hubs.doc(autoId).set(newHub)
+    await users.doc(req.params.id).update({hub:autoId, role:"admin"})
+    res.send({success:true, data:newHub})
   } catch(error) {
     res.send({"error":error})
   }
@@ -232,19 +325,22 @@ app.post('/addRoom/:id/', async(req,res) => { //add room with the user id in the
       ra:false // room activity
     }
 
-    const room = await rooms.add(newRoom)
+    let autoId = await rooms.doc().id;
+    newRoom.id = autoId;
 
-    await users.doc(req.params.id).update({room:room.id})
+    await rooms.doc(autoId).set(newRoom) // add room to rooms collection
 
-    const hub = await hubs.doc(data.hubId).get().then((doc) => {
+    await users.doc(req.params.id).update({room:autoId}) // add room id into user document
+
+    const hub = await hubs.doc(data.hubId).get().then((doc) => { // push room id into the rooms array in the hub
       return doc.data()
     })
 
     let roomList = hub.rooms
-    roomList.push(room.id)
+    roomList.push(autoId)
     await hubs.doc(data.hubId).update({rooms:roomList})
 
-    res.send({success:true, data:newRoom, id:room.id})
+    res.send({success:true, data:newRoom})
   } catch(error) {
     res.send({"error":error})
   }
@@ -285,10 +381,6 @@ app.post('/updateUserPreference/:id', async(req, res) => {
   const dataObj = req.body
   try{
     await users.doc(req.params.id).update({userPreference:dataObj.userPreference})
-    
-    // const user = users.doc(req.params.id).get().then((doc) => {
-    //   return doc.data()
-    // })
 
     const preference = dataObj.userPreference
     const info = {
@@ -325,12 +417,6 @@ app.post('/updateSensor', async(req, res) => {
 
 app.get('/users/:id', async (req, res) => {
   const items = []
-  // const find = await users.where("uid", "==", req.params.id).get().then(snapshot => {
-  //   snapshot.docs.forEach(doc => {
-  //     items.push(doc.data())
-  //   })
-  // });
-
 
   const snapshot = await users.where("uid", "==", req.params.id).get()
   const getUsers = snapshot.docs.map(doc => {
@@ -364,5 +450,6 @@ app.post('/hubs/create', async (req, res) => {
   await hubs.add(req.body);
   res.send({"success":true});
 })
+
 
 exports.app = functions.https.onRequest(app);

@@ -1,5 +1,13 @@
 <template>  
     <div>
+        <a-modal :visible="visible" @cancel="onClose" :footer="null" :centered="true">
+            <h3>Copy the code below and share it with your new member</h3>
+            <strong>{{hubId}}</strong>
+            <div class="flex justify-end">
+                <a-button type="primary" @click="onClose">DONE</a-button>
+            </div>
+        </a-modal>
+        <Loading :show="loading" />
         <AddUserModal :visible="addUser" @closeModal="closeModal" />
         <div class="user-panel" style="background-color: var(--offWhite); border-radius:20px; padding:20px">
             <div style="font-size:22px; font-weight:500">Welcome back {{this.user.firstName}}!</div>
@@ -9,78 +17,67 @@
             <div class="mt-5">
                 <div>Members</div>
                 <div style="background-color:#FFF; border-radius:20px; padding:10px; display:flex; overflow-x:scroll">
-                    <div class="mr-4" v-for="member in members" :key="member.id">
-                        <img style="width:40px; height:40px; margin:auto" :src="member.avatar" />
+                    <div class="mr-4" v-for="member in users" :key="member.id">
+                        <img v-if="member.avatar && member.avatar != ''" style="width:40px; height:40px; margin:auto" :src="member.avatar" />
+                        <a-avatar v-else :size="40">{{`${member.firstName.charAt(0).toUpperCase()}${member.lastName.charAt(0).toUpperCase()}`}}</a-avatar>
                         <div>{{member.firstName}}</div>
                     </div>
                     <a-tooltip placement="bottomRight">
                         <template slot="title">
                             <span>Add New User</span>
                         </template>
-                        <div @click="addNewUser" class="flex items-center" style="border:1px solid #000; border-radius:20px; padding:10px; cursor:pointer">
+                        <!-- <div @click="addNewUser" class="flex items-center" style="border:1px solid #000; border-radius:20px; padding:10px; cursor:pointer">
                             <i style="font-size:20px" class="fas fa-plus" />
-                        </div>
+                        </div> -->
                     </a-tooltip>
                 </div>
             </div>
             <div class="mt-5">
-                <div>Popular Devices</div>
+                <div>Invite New User</div>
+                <a-button @click="shareInfo" class="mt-3" type="primary">GET HUB INFO</a-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import Loading from '@/components/Loading.vue'
+import api from '@/services/api'
 import AddUserModal from '@/components/AddUserModal.vue' 
 export default {
     components:{
-        AddUserModal
+        AddUserModal,Loading
+    },
+    computed:{
+        user(){
+            return this.$store.state.user
+        },
+        users() {
+            return this.$store.state.users
+        }
     },
     data() {
         return{
-            user:{
-                firstName:'Dorothy',
-                lastName:'Nguyen',
-                id:'1',
-                avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_1_1a7224e7b1.png',
-            },
-            members:[
-                {
-                    firstName:'Dorothy',
-                    lastName:'Nguyen',
-                    id:'1',
-                    avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_1_1a7224e7b1.png',
-                },
-                {
-                    firstName:'Leslie',
-                    lastName:'Kocsis',
-                    id:'2',
-                    avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_2_cf2fd523f6.png',
-                },
-                {
-                    firstName:'Adnan',
-                    lastName:'Hossain',
-                    id:'3',
-                    avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_3_190bd9ade1.png',
-                },
-                {
-                    firstName:'Kashavan',
-                    lastName:'Parameswaran',
-                    id:'4',
-                    avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_4_725c9baeba.png',
-                },
-                {
-                    firstName:'Justin',
-                    lastName:'Yang',
-                    id:'5',
-                    avatar:'https://bildhive.nyc3.digitaloceanspaces.com/v3///avatar_5_ec3e719ed3.png',
-                }
-            ],
+            loading:false,
             shortMonth:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             addUser:false,
+            visible:false,
+            hubId:''
         }
     },
     methods:{
+        onClose() {
+            this.visible = false
+            this.hubId = ''
+        },
+        shareInfo() {
+            this.loading = true
+            api().get(`/getHub/${this.user.id}`).then(({data}) => {
+                this.hubId = data.hubId
+                this.loading = false
+                this.visible = true
+            })
+        },
         addNewUser() {
             this.addUser = true
         },

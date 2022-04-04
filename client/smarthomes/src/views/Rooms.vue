@@ -1,180 +1,155 @@
 <template>
     <div style="width:100%">
+        <Loading :show="loading" />
         <div style="padding:0 20px 20px 20px; background-color:var(--offWhiteLight); width:100%; height:100%; min-height:calc(100vh - 80px)">
-            <AddRoomModal :visible="addRoom" @closeModal="closeModal" :availDevices="availDevices" />
-            <a-row :gutter="[16,16]">
-                <a-col :span="24" v-for="room in rooms" :key="room.id">
-                    <div style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px;">
-                        <div class="flex justify-between items-center">
-                            <div style="font-weight:500; font-size:18px">{{room.name}}</div>
-                            <div class="flex items-center">
-                                <a-tooltip placement="bottomRight" class="mr-3">
-                                    <template slot="title">Edit Room</template>
-                                    <i style="cursor:pointer" class="fas fa-ellipsis-h" />
-                                </a-tooltip>
-                                <a-tooltip placement="bottomRight">
-                                    <template slot="title">Delete Room</template>
-                                    <i style="color:var(--danger); cursor:pointer" class="fas fa-trash-alt" />
-                                </a-tooltip>
-                            </div>
-                        </div>
-                        <div class="sm:flex mt-3">
-                            <div class="mr-5">
-                                <div style="font-weight:500">Power Consumption</div>
-                                <div>{{room.powerConsumption}}kWh</div>
-                            </div>
-                            <div class="sm:ml-5 mt-2 sm:mt-0">
-                                <div style="font-weight:500">Devices</div>
-                                <div v-for="device in devices" :key="device.id">
-                                    <div v-if="device.room == room.id">{{device.name}}</div>
+            <a-row v-if="currentUser.room" :gutter="[16, 16]">
+                <a-col :span="24">
+                    <div class="shadow" style="border-radius:20px; background-color:#FFF; padding:10px">
+                        <div style="font-size:30px; font-weight:500">My Room</div>
+                        <div class="mt-3">
+                            <h2 style="font-size:20px">{{rooms[currentUser.room].name}}</h2>
+                            <div class="grid grid-cols-3 gap-5">
+                                <div>
+                                    <div class="text-black">Room Power</div>
+                                    <div style="color:#718096">{{rooms[currentUser.room].pow}}</div>
+                                </div>
+                                <div>
+                                    <div class="text-black">Room Activity</div>
+                                    <div style="color:#718096">{{rooms[currentUser.room].ra}}</div>
+                                </div>
+                                <div>
+                                    <div class="text-black">Room Brightness</div>
+                                    <div style="color:#718096">{{rooms[currentUser.room].rb}}</div>
+                                </div>
+                                <div>
+                                    <div class="text-black">Room Humidity</div>
+                                    <div style="color:#718096">{{rooms[currentUser.room].rh}}</div>
+                                </div>
+                                <div>
+                                    <div class="text-black">Room Temperature</div>
+                                    <div style="color:#718096">{{rooms[currentUser.room].rt}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </a-col>
             </a-row>
-            <a-row :gutter="16">
-                <a-col :span="24">
-                    <div class="mt-4 add-button" @click="addNewRoom">
-                        <div class="flex items-center">
-                            <i style="font-size:15px" class="fas fa-plus-circle mr-2" />
-                            <div>Add New Room</div>
+            <hr style="margin-top:20px" />
+            <div style="font-size:20px;" class="text-black my-3">Other rooms in this hub</div>
+            <a-row :gutter="[16,16]" v-if="otherRooms.length">
+                <a-col :span="24" v-for="room in otherRooms" :key="room.id">
+                    <div style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px;">
+                        <div class="flex justify-between items-center">
+                            <div style="font-weight:500; font-size:18px">{{room.name}}</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-5">
+                            <div>
+                                <div class="text-black">Room Power</div>
+                                <div style="color:#718096">{{room.pow}}</div>
+                            </div>
+                            <div>
+                                <div class="text-black">Room Activity</div>
+                                <div style="color:#718096">{{room.ra}}</div>
+                            </div>
+                            <div>
+                                <div class="text-black">Room Brightness</div>
+                                <div style="color:#718096">{{room.rb}}</div>
+                            </div>
+                            <div>
+                                <div class="text-black">Room Humidity</div>
+                                <div style="color:#718096">{{room.rh}}</div>
+                            </div>
+                            <div>
+                                <div class="text-black">Room Temperature</div>
+                                <div style="color:#718096">{{room.rt}}</div>
+                            </div>
+                            <div>
+                                <div class="text-black">Room Owner</div>
+                                <div style="color:#718096">{{`${storeUsers[room.user].firstName} ${storeUsers[room.user].lastName}`}}</div>
+                            </div>
                         </div>
                     </div>
                 </a-col>
             </a-row>
+            <div v-else style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:10px;">
+                You do not have any other room in this hub...
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import AddRoomModal from '@/components/AddRoomModal.vue' 
+import Loading from '@/components/Loading.vue'
+import api from '@/services/api'
 
 export default {
     components:{
-        AddRoomModal
-    },
-    computed:{
-        availDevices() {
-            let devices = []
-            devices = this.devices.filter(x => x.room == '0')
-            return devices
-        }
+        Loading
     },
     data() {
         return{
+            loading:false,
             addRoom:false,
-            rooms:[
-                {
-                    name:'Living Room',
-                    id:'1',
-                    powerConsumption:76,
-                    updatedAt:1637087029874,
-                },
-                {
-                    name:'Dinning Room',
-                    id:'2',
-                    powerConsumption:87,
-                    updatedAt:1637087029874,
-                },
-                {
-                    name:'Kitchen',
-                    id:'3',
-                    powerConsumption:54,
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Study Room',
-                    id:'4',
-                    powerConsumption:79,
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Bed Room',
-                    id:'5',
-                    powerConsumption:49,
-                    updatedAt:1637087029874
-                },
-            ],
-            devices:[
-                {
-                    name:'Fan',
-                    id:'1',
-                    room:'1',
-                    editedBy:'1',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'AC',
-                    id:'2',
-                    room:'1',
-                    editedBy:'2',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Humidifier',
-                    id:'3',
-                    room:'1',
-                    editedBy:'2',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Fridge',
-                    id:'4',
-                    room:'3',
-                    editedBy:'3',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Oven',
-                    id:'5',
-                    room:'3',
-                    editedBy:'3',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Washing Machine',
-                    id:'6',
-                    room:'3',
-                    editedBy:'3',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Mini Fridge',
-                    id:'7',
-                    room:'2',
-                    editedBy:'4',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Heater',
-                    id:'8',
-                    room:'5',
-                    editedBy:'4',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Speaker',
-                    id:'9',
-                    room:'4',
-                    editedBy:'4',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'AC',
-                    id:'10',
-                    room:'4',
-                    editedBy:'4',
-                    updatedAt:1637087029874
-                },
-                {
-                    name:'Test',
-                    id:'11',
-                    room:'0',
-                    editedBy:'4',
-                    updatedAt:1637087029874
+            currentUser:{
+                device:'',
+                email:'',
+                firstName:'',
+                hub:'',
+                lastName:'',
+                role:'',
+                room:'',
+                userPreference:{
+                    b:0,
+                    device:'',
+                    dt:'',
+                    fIP:100,
+                    fSP:false,
+                    lIP:100,
+                    lSP:false,
+                    msg:'',
+                    r:0,
+                    g:0,
+                    room:'',
+                    tP:0
                 }
-            ]
+            }
+        }
+    },
+    computed:{
+        storeUsers() {
+            let users = {}
+            this.users.forEach(user => {
+                users[user.id] = user
+            })
+            return users
+        },
+        hubs(){
+            return this.$store.state.hubs
+        },
+        users() {
+            return this.$store.state.users
+        },
+        user() {
+            return this.$store.state.user
+        },
+        rooms() {
+            let rooms = {}
+            this.$store.state.rooms.forEach(room => {
+                rooms[room.id] = room
+            })
+            return rooms
+        },
+        storeRooms() {
+            return this.$store.state.rooms
+        },
+        otherRooms() {
+            let rooms = []
+            if (this.user && this.user.room) {
+                this.storeRooms.forEach(room => {
+                    if (room.id != this.user.room) rooms.push(room)
+                })
+            }
+            return rooms
         }
     },
     methods:{
@@ -188,7 +163,23 @@ export default {
             let rooms = []
             rooms = this.rooms.filter(x => x.room == '0')
             return rooms
-        }
+        },
+    },
+    async created() {
+        this.loading = true
+        await api().post('/checkLogin', {test:"test"}).then(async ({data}) => {
+            if (data.success) {
+                if (data.user == null) {
+                    document.cookie = await '__shtk ='
+                    this.$router.push('/login')
+                }
+                else {
+                    this.$store.commit('GET_APPDATA', data)
+                    this.currentUser = data.user[0]
+                }
+            }
+            this.loading = false
+        })
     }
 }
 </script>

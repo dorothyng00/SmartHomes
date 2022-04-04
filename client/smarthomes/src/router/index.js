@@ -77,6 +77,14 @@ const routes = [
     component: () => import('../views/Members.vue')
   },
   {
+    path: '/setup',
+    name: 'Setup',
+    meta:{
+      leftNav:false
+    },
+    component: () => import('../views/Setup.vue')
+  },
+  {
     path: '/login',
     name: 'Log In',
     meta:{
