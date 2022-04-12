@@ -134,27 +134,16 @@
                     <div style="background-color:#FFF; border-radius:20px; border:1px solid #f1f2fd; padding:20px">
                         <div style="font-size:25px; font-weight: 500;">LED Color Settings</div>
                         <div class="grid grid-cols-2 gap-2 mt-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                            <div v-for="color in colors" :key="color" :value="color" class="shadow-xl" style="border-radius:8px; border:1px solid #F2F2F2" >
+                            <div @click="updateColor(color)" :class="getColor() == color ? 'selected-color' : ''" v-for="color in colors" :key="color" :value="color" class="shadow-xl color-card" style="border-radius:8px; border:1px solid #F2F2F2" >
                                 <div style="padding:10px">
                                     <div :style="`background-color:${color}`" class="h-20 md:h-30 lg:h-40" style="width:100%;"></div>
                                     <div style="background-color:#FFF; padding:10px 0"><strong>{{color}}</strong></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-3 flex justify-end">
-                            <a-button class="confirm-button">SAVE</a-button>
-                        </div>
                     </div>
                 </a-col>
             </a-row>
-            <!-- <a-row class="mt-6" :gutter="16">
-                <a-col :span="24">
-                    <div style="background-color:#FFF; border-radius:20px; border: 1px solid #f1f2fd; padding:10px">
-                        <div id="chart"></div>
-                    </div>
-                </a-col>
-            </a-row> -->
-            <!-- <a-button @click="test">teste</a-button> -->
         </div>
     </div>
 </template>
@@ -230,6 +219,22 @@ export default {
         }
     },
     methods:{
+        getColor() {
+            if (this.currentUser.userPreference.r != 0 && this.currentUser.userPreference.g != 0 && this.currentUser.userPreference.b != 0) {
+                let map = {
+                    '1':'FF',
+                    '254':'00',
+                    '100':'64',
+                    '200':'C8'
+                }
+                let color = '#'
+                color = color + map[this.currentUser.userPreference.r.toString()]
+                color = color + map[this.currentUser.userPreference.g.toString()]
+                color = color + map[this.currentUser.userPreference.b.toString()]
+                console.log('colorr', color, this.currentUser.userPreference.r)
+                return color
+            } return ''
+        },
         changeMode(mode) {
             let preference = JSON.parse(JSON.stringify(this.currentUser.userPreference))
             preference.dt = mode
@@ -270,6 +275,38 @@ export default {
                     duration: 4
                 });
             })
+        },
+        updateColor(color) {
+            console.log('colaf', typeof color)
+            let map = {
+                'FF':1,
+                '00':254,
+                '64':100,
+                'C8':200
+            }
+            if (color != '') {
+                let r = map[color.substring(1,3)]
+                let g = map[color.substring(3,5)]
+                let b = map[color.substring(5,7)]
+                let prevR = this.currentUser.userPreference.r
+                let prevG = this.currentUser.userPreference.g
+                let prevB = this.currentUser.userPreference.b
+                try {
+                    this.currentUser.userPreference.r = r 
+                    this.currentUser.userPreference.g = g
+                    this.currentUser.userPreference.b = b
+                    this.updatePreference()
+                }catch (error) {
+                    this.currentUser.userPreference.r = prevR
+                    this.currentUser.userPreference.g = prevG
+                    this.currentUser.userPreference.b = prevB
+                    return this.$notification['error']({
+                        message: 'Error',
+                        description: 'Something went wrong',
+                        duration: 4
+                    });
+                }
+            }
         },
         changeIntensity() {
             const makeAPICall = () => {
@@ -386,5 +423,10 @@ export default {
         padding:0 20px 20px 20px;
     }
 }
-
+.color-card{
+    cursor:pointer;
+}
+.selected-color{
+    border:4px solid var(--blue) !important;
+}
 </style>

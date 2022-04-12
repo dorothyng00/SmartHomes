@@ -12,6 +12,12 @@ export default new Vuex.Store  ({
     user:{}
   },
   mutations:{
+    UPDATE_ROOMS(state, data) {
+      let index = state.rooms.findIndex(x => x.id == data.id)
+      if(index != -1) {
+        state.rooms[index] = data
+      }
+    },
     UPDATE_ADD_ROOM(state, data) {
       state.user.room = data.id
       state.rooms.push(data)

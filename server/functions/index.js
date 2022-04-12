@@ -451,5 +451,27 @@ app.post('/hubs/create', async (req, res) => {
   res.send({"success":true});
 })
 
+app.get('/rooms/:id', async(req, res) => {
+  try{
+    const r = await rooms.doc(req.params.id).get().then((doc) => {
+      return doc.data()
+    })
+    res.send({data:r})
+  } catch(error) {
+    res.send({'error':error})
+  }
+})
+
+app.put('/rooms/:id', async(req, res) => {
+  const data = req.body
+  try {
+    await rooms.doc(req.params.id).update({
+      name:data.name
+    })
+    res.send({success:true})
+  }catch (error) {
+    res.send({"error":error})
+  }
+})
 
 exports.app = functions.https.onRequest(app);

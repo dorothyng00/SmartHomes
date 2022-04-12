@@ -12,6 +12,7 @@
     "apexcharts": "^3.33.0",
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
+    "moment": "^2.29.2",
     "vue": "^2.6.11",
     "vue-resource": "^1.5.3",
     "vue-router": "^3.5.3",
